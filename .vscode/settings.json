@@ -1,0 +1,11 @@
+{
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.wrappingIndent": "same",
+    "editor.insertSpaces": true,
+    "editor.wordWrapColumn": 240,
+    "python.formatting.provider":"autopep8",
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.python"
+     },
+    "python.formatting.autopep8Args": ["--max-line-length", "240", "--experimental"],
+}
