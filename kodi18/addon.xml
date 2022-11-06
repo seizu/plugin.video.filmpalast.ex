@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.filmpalast.ex" name="FilmPalastEx" version="0.2.5" provider-name="seizu">
+<addon id="plugin.video.filmpalast.ex" name="FilmPalastEx" version="0.2.6" provider-name="seizu">
     <requires>
-        <import addon="script.module.resolveurl" version="5.1.67"/>
+        <import addon="script.module.resolveurl" version="5.1.83"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="default.py">
         <provides>video</provides>

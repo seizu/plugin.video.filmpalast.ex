@@ -1,3 +1,6 @@
+0.2.6
+  - url resolver updated
+
 0.2.5
   - wrong plugin name fix
 
