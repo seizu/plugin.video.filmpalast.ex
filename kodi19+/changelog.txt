@@ -1,3 +1,6 @@
+0.2.7m
+  - setting items_per_page updated
+
 0.2.6m
   - url resolver updated
 
