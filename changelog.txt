@@ -1,0 +1,68 @@
+0.2.7
+  - setting items_per_page updated
+
+0.2.6
+  - url resolver updated
+
+0.2.5
+  - wrong plugin name fix
+
+0.2.4
+  - repo struct changed
+
+0.2.3
+  - kodi18 version
+
+0.2.1
+  - repo fix
+
+0.2.0
+  - url resolver changed
+  - preload movie info
+  - repexp changed
+  - settings added
+  - list view option added
+  
+0.1.17
+ - openload fix
+ 
+0.1.14
+ - additional movie info (rating/votes/genre/runtime/year)
+   configurable in addon settings
+
+0.1.13
+ - openload support
+
+0.1.12
+ - url fix
+
+0.1.11
+ - fixes due to page changes
+ - cloudyvideo fixed again
+
+0.1.10
+ - cloudyvideo fixed
+
+0.1.9
+ - search feature added
+ 
+0.1.8
+ - update younow resolver
+ 
+0.1.7
+ - update flashx resolver
+
+0.1.6
+ - missing requirement fixed
+
+0.1.5
+ - hoster fixed
+ - hoster added
+ 
+0.1.4
+ - dbg output removed
+
+...
+
+0.1.0
+ - first try
