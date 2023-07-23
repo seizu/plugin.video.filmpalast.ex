@@ -1,12 +1,11 @@
 #!/usr/bin/python
-# kodi18 (python2.7)
-import urllib
-import urllib2
+# kodi18+ (python3+)
+
+import urllib.request
+import urllib.parse
+import urllib.error
 import re
-import xbmcaddon
-import xbmcplugin
-import xbmcgui
-import xbmc
+from kodi_six import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 
 dbg = False
 pluginhandle = int(sys.argv[1])
@@ -27,6 +26,7 @@ preGenres = settings.getSetting("preGenres") == 'true'
 userAgent = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:41.0) Gecko/20100101 Firefox/41.0'
 
 def START():
+    #addDir('Neu', baseurl, 1, '', True)
     addDir('Neue Filme', baseurl + '/movies/new', 1, '', True)
     addDir('Neue Serien', baseurl + '/serien/view', 1, '', True)
     addDir('Top Filme', baseurl + '/movies/top', 1, '', True)
@@ -53,13 +53,14 @@ def ALPHA():
 
 def INDEX(caturl):
     if (dbg):
-        print caturl
+        print(caturl)
     global itemcnt
     data = getUrl(caturl)
     for entry in re.findall('id="content"[^>]*>(.+?)<[^>]*id="paging"', data, re.S | re.I):
         if (dbg):
-            print entry
-        for rating, url, title, image in re.findall('</cite>(.*?)<a[^>]*href="//filmpalast.to([^"]*)"[^>]*title="([^"]*)"[^>]*>[^<]*<img[^>]*src=["\']([^"\']*)["\'][^>]*>', entry, re.S | re.I):
+            print(entry)
+        for rating, url, title, image in re.findall(
+                '</cite>(.*?)<a[^>]*href="//filmpalast.to([^"]*)"[^>]*title="([^"]*)"[^>]*>[^<]*<img[^>]*src=["\']([^"\']*)["\'][^>]*>', entry, re.S | re.I):
             if 'http:' not in url:
                 url = baseurl + url
             if 'http:' not in image:
@@ -68,8 +69,10 @@ def INDEX(caturl):
                 stars = len(re.findall('star_on.png', rating, re.S | re.I))
                 title = title + "  [COLOR=blue]"+str(stars)+"/10[/COLOR]"
             if showVotes:
-                votes = re.findall('<sm.*?p;(.*?)&nbsp.*?ll>', rating, re.S | re.I)
-                title = title + "  [COLOR=blue](" + str(votes[0]) + " votes)[/COLOR]"
+                votes = re.findall(
+                    '<sm.*?p;(.*?)&nbsp.*?ll>', rating, re.S | re.I)
+                title = title + \
+                    "  [COLOR=blue](" + str(votes[0]) + " votes)[/COLOR]"
             if preloadInfo:
                 info = getInfos(getUrl(url))
                 if preRating and info['imdb']:
@@ -81,7 +84,7 @@ def INDEX(caturl):
     nextPage = re.findall('<a[^>]*class="[^"]*pageing[^"]*"[^>]*href=["\']([^"\']*)["\'][^>]*>[ ]*vorw', data, re.S | re.I)
     if nextPage:
         if (dbg):
-            print nextPage
+            print(nextPage)
         if itemcnt >= maxitems:
             addDir('Weiter >>', nextPage[0], 1, '',  True)
         else:
@@ -93,17 +96,17 @@ def SEARCH(url):
     keyboard = xbmc.Keyboard('', 'Suche')
     keyboard.doModal()
     if keyboard.isConfirmed() and keyboard.getText():
-        search_string = urllib.quote(keyboard.getText())
+        search_string = urllib.parse.quote(keyboard.getText())
         INDEX(url + search_string)
 
 def clean(s):
     matches = re.findall("&#\d+;", s)
     for hit in set(matches):
         try:
-            s = s.replace(hit, unichr(int(hit[2:-1])))
+            s = s.replace(hit, chr(int(hit[2:-1])))
         except ValueError:
             pass
-    return urllib.unquote_plus(s)
+    return urllib.parse.unquote_plus(s)
 
 def selectVideoDialog(videos, data):
     titles = []
@@ -132,9 +135,9 @@ def getInfos(data):
     match = re.search('itemprop="description">(.*?)<', data, re.S | re.I)
     if match:
         info['description'] = match.group(1)
-    for genre in re.findall('class="rb"[^>]*genre/(.*?)"', data, re.S | re.I|re.DOTALL):
+    for genre in re.findall('class="rb"[^>]*genre/(.*?)"', data, re.S | re.I | re.DOTALL):
         info['genres'] = info['genres'] + genre + " / "
-    for actor in re.findall('class="rb".*?"/search/title/(.*?)"', data, re.S | re.I|re.DOTALL):
+    for actor in re.findall('class="rb".*?"/search/title/(.*?)"', data, re.S | re.I | re.DOTALL):
         info['actors'] = info['actors'] + actor + " / "
     info['actors'] = info['actors'].rstrip(' /')
     info['genres'] = info['genres'].rstrip(' /')
@@ -156,34 +159,36 @@ def resolveUrl(mediaUrl, validateOnly=False):
 
 def PLAYVIDEO(url):
     global filterUnknownHoster
-    print url
+    print(url)
     data = getUrl(url)
     if not data:
         return
     videos = []
-    for hoster, mediaUrl in re.findall('<p class="hostName">(.*?)<.*?<li class="streamPlayBtn clearfix rb">.*?<a.*?class="button.*?(?:url|href)="(.*?)"', data, re.S | re.I|re.DOTALL):
+    for hoster, mediaUrl in re.findall(
+            '<p class="hostName">(.*?)<.*?<li class="streamPlayBtn clearfix rb">.*?<a.*?class="button.*?(?:url|href)="(.*?)"', data, re.S | re.I | re.DOTALL):
         if filterUnknownHoster and resolveUrl(mediaUrl, True) == False:
             continue
         videos += [(hoster, mediaUrl)]
     lv = len(videos)
     if lv == 0:
-        xbmc.executebuiltin("XBMC.Notification(Fehler!, Video nicht gefunden, 4000)")
+        xbmc.executebuiltin(
+            "XBMC.Notification(Fehler!, Video nicht gefunden, 4000)")
         return
     url = selectVideoDialog(videos, data) if lv > 1 else videos[0][1]
     if url:
         stream_url = resolveUrl(url)
         if stream_url:
-            print 'open stream: ' + stream_url
+            print(('open stream: ' + stream_url))
             listitem = xbmcgui.ListItem(path=stream_url)
             return xbmcplugin.setResolvedUrl(pluginhandle, True, listitem)
     raise Exception('Resolve URL aborted')
 
 def getUrl(url):
-    req = urllib2.Request(url)
+    req = urllib.request.Request(url)
     req.add_header('User-Agent', userAgent)
     req.add_header('Referer', url)
-    response = urllib2.urlopen(req, timeout=30)
-    data = response.read()
+    response = urllib.request.urlopen(req, timeout=30)
+    data = response.read().decode('utf-8')
     response.close()
     return data  # .decode('utf-8')
 
@@ -193,7 +198,7 @@ def get_params():
     if len(paramstring) >= 2:
         params = sys.argv[2]
         cleanedparams = params.replace('?', '')
-        if (params[len(params)-1] =='/'):
+        if (params[len(params)-1] == '/'):
             params = params[0:len(params)-2]
         pairsofparams = cleanedparams.split('&')
         param = {}
@@ -204,16 +209,21 @@ def get_params():
     return param
 
 def addLink(name, url, mode, image):
-    u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=" + str(mode)
-    liz = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=image)
-    liz.setInfo(type="Video", infoLabels={"Title": name } )
+    u = sys.argv[0] + "?url=" + urllib.parse.quote_plus(url) + "&mode=" + str(mode)
+    #liz = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=image)
+    liz = xbmcgui.ListItem(name)
+    liz.setArt({'icon': 'DefaultVideo.png', 'thumb': image})
+    liz.setInfo(type="Video", infoLabels={"Title": name})
     liz.setProperty('IsPlayable', 'true')
     return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz)
 
 def addDir(name, url, mode, image, is_folder=False):
-    u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=" + str(mode)
-    liz = xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=image)
-    liz.setInfo(type="Video", infoLabels={"Title": name } )
+    u = sys.argv[0] + "?url=" + urllib.parse.quote_plus(url) + "&mode=" + str(mode)
+    liz = xbmcgui.ListItem(name)
+    liz.setArt({'icon': 'DefaultFolder.png', 'thumb': image})
+    # liz.setArtpath()
+    #liz = xbmcgui.ListItem(name, icon="DefaultFolder.png", thumbnailImage=image)
+    liz.setInfo(type="Video", infoLabels={"Title": name})
     return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz, isFolder=is_folder)
 
 params = get_params()
@@ -221,7 +231,7 @@ url = None
 mode = None
 
 try:
-    url = urllib.unquote_plus(params["url"])
+    url = urllib.parse.unquote_plus(params["url"])
 except:
     pass
 try:
@@ -230,17 +240,17 @@ except:
     pass
 
 try:
-    if mode ==None or url==None or len(url)<1:
+    if mode == None or url == None or len(url) < 1:
         START()
-    elif mode==1:
+    elif mode == 1:
         INDEX(url)
-    elif mode==2:
+    elif mode == 2:
         CATEGORIES(url)
-    elif mode==3:
+    elif mode == 3:
         ALPHA()
-    elif mode==4:
+    elif mode == 4:
         SEARCH(url)
-    elif mode==10:
+    elif mode == 10:
         PLAYVIDEO(url)
     xbmcplugin.endOfDirectory(pluginhandle)
 except Exception as e:

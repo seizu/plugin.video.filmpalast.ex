@@ -1,4 +1,5 @@
 <settings>
+  <category label="View Settings">
    <setting id="filterUnknownHoster" type="bool" label="30101" default="true"/>
    <setting id="forceViewMode" type="bool" label="30102" default="true"/>
    <setting id="showMovieInfo" type="bool" label="30105" default="true"/>
@@ -9,4 +10,5 @@
    <setting id="preGenres" type="bool" label="30110" default="false"  enable="eq(-2,true)"/>
    <setting id="viewMode" type="number" label="30103" default="400"/>
    <setting id="items_per_page" type="enum" label="30104" values="8|16|32|64|96|128" default="0"/>
-  </settings>
+ </category>
+</settings>

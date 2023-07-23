@@ -1,0 +1,47 @@
+# Kodi Media Center language file
+msgid "hallo"
+msgstr ""
+
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+
+msgctxt "#30101"
+msgid "Filter Not Supported Hosts"
+msgstr ""
+
+msgctxt "#30102"
+msgid "Force View"
+msgstr ""
+
+msgctxt "#30103"
+msgid "ViewID"
+msgstr ""
+
+msgctxt "#30104"
+msgid "Max Items per Page"
+msgstr ""
+
+msgctxt "#30105"
+msgid "Show Movie Info in dialog"
+msgstr ""
+
+msgctxt "#30106"
+msgid "Show FP Rating in list view"
+msgstr ""
+
+msgctxt "#30107"
+msgid "Show FP Votes in list view"
+msgstr ""
+
+msgctxt "#30108"
+msgid "Preload Movie Info (slow)"
+msgstr ""
+
+msgctxt "#30109"
+msgid "Show IMDB Rating in list view"
+msgstr ""
+
+msgctxt "#30110"
+msgid "Show Genre in list view"
+msgstr ""
