@@ -9,7 +9,7 @@ Installation
 4) Recommended Skin: Confluence	
 
 List View
-![liest view](https://raw.githubusercontent.com/seizu/plugin.video.filmpalast.ex/main/screenshot.png)
+![liest view](https://raw.githubusercontent.com/seizu/plugin.video.filmpalast.ex/kodi19+/screenshot.png)
 
 Settings - View
-![settings](https://raw.githubusercontent.com/seizu/plugin.video.filmpalast.ex/main/screenshot_settings.png)
+![settings](https://raw.githubusercontent.com/seizu/plugin.video.filmpalast.ex/kodi19+/screenshot_settings.png)
