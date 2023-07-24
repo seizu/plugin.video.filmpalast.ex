@@ -1,5 +1,5 @@
 # Kodi Media Center language file
-msgid "hallo"
+msgid ""
 msgstr ""
 
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -44,4 +44,12 @@ msgstr ""
 
 msgctxt "#30110"
 msgid "Show Genre in list view"
+msgstr ""
+
+msgctxt "#30111"
+msgid "Bybass DNS Lock"
+msgstr ""
+
+msgctxt "#30112"
+msgid "Cache pages"
 msgstr ""

@@ -1,19 +1,21 @@
 #!/usr/bin/python
 # kodi18+ (python3+)
-
 import urllib.request
 import urllib.parse
 import urllib.error
+import hashlib
 import re
-from kodi_six import xbmc, xbmcaddon, xbmcgui, xbmcplugin
+import os
+import xlibs.urllib3 as urllib3p
+from kodi_six import xbmc, xbmcaddon, xbmcgui, xbmcplugin, xbmcvfs
 
-dbg = False
+dbg = True
 pluginhandle = int(sys.argv[1])
 itemcnt = 0
-baseurl = 'http://filmpalast.to'
-streamurl = 'http://filmpalast.to/stream/{id}/1'
+baseurl = 'https://filmpalast.to'
+streamurl = 'https://filmpalast.to/stream/{id}/1'
 settings = xbmcaddon.Addon(id='plugin.video.filmpalast.ex')
-maxitems = (int(settings.getSetting("items_per_page"))+1)*32
+maxitems = 32
 filterUnknownHoster = settings.getSetting("filterUnknownHoster") == 'true'
 forceViewMode = settings.getSetting("forceViewMode") == 'true'
 viewMode = str(settings.getSetting("viewMode"))
@@ -23,18 +25,24 @@ showMovieInfo = settings.getSetting("showMovieInfo") == 'true'
 preloadInfo = settings.getSetting("preloadInfo") == 'true'
 preRating = settings.getSetting("preRating") == 'true'
 preGenres = settings.getSetting("preGenres") == 'true'
-userAgent = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:41.0) Gecko/20100101 Firefox/41.0'
+userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0'
+bypassDNSlock = settings.getSetting("bypassDNSlock") == 'true'
+caching = settings.getSetting("caching") == 'true' or bypassDNSlock
+tempDir = xbmcvfs.translatePath("special://temp") + "filmpalast" + os.sep
+
+print("Super:" + viewMode)
 
 def START():
-    #addDir('Neu', baseurl, 1, '', True)
+    addDir('Neu', baseurl + '/', 1, '', True)
     addDir('Neue Filme', baseurl + '/movies/new', 1, '', True)
     addDir('Neue Serien', baseurl + '/serien/view', 1, '', True)
     addDir('Top Filme', baseurl + '/movies/top', 1, '', True)
+    addDir('English',baseurl + '/search/genre/Englisch', 1, '', True)
     addDir('Kategorien', baseurl, 2, '', True)
     addDir('Alphabetisch', baseurl, 3, '', True)
     addDir('Suche...', baseurl+'/search/title/', 4, '', True)
     if forceViewMode:
-        xbmc.executebuiltin("Container.SetViewMode("+viewMode+")")
+        xbmc.executebuiltin('Container.SetViewMode({})'.format(viewMode))
 
 def CATEGORIES(url):
     data = getUrl(url)
@@ -42,18 +50,18 @@ def CATEGORIES(url):
         for (href, name) in re.findall('<a[^>]*href="([^"]*)">[ ]*([^<]*)</a>', genre, re.S | re.I):
             addDir(clean(name), href, 1, '', True)
     if forceViewMode:
-        xbmc.executebuiltin("Container.SetViewMode("+viewMode+")")
+        xbmc.executebuiltin('Container.SetViewMode({})'.format(viewMode))
 
 def ALPHA():
     addDir('#', baseurl + '/search/alpha/0-9', 1, '', True)
     for char in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
         addDir(char, baseurl + '/search/alpha/' + char, 1, '', True)
     if forceViewMode:
-        xbmc.executebuiltin("Container.SetViewMode("+viewMode+")")
+        xbmc.executebuiltin('Container.SetViewMode({})'.format(viewMode))
 
 def INDEX(caturl):
     if (dbg):
-        print(caturl)
+        xbmc.log(caturl)
     global itemcnt
     data = getUrl(caturl)
     for entry in re.findall('id="content"[^>]*>(.+?)<[^>]*id="paging"', data, re.S | re.I):
@@ -61,10 +69,14 @@ def INDEX(caturl):
             print(entry)
         for rating, url, title, image in re.findall(
                 '</cite>(.*?)<a[^>]*href="//filmpalast.to([^"]*)"[^>]*title="([^"]*)"[^>]*>[^<]*<img[^>]*src=["\']([^"\']*)["\'][^>]*>', entry, re.S | re.I):
-            if 'http:' not in url:
+            #if 'http:' not in url:
+            #    url = baseurl + url
+            #if 'http:' not in image:
+            #    image = baseurl + image
+            if 'http' != url[:4].lower():
                 url = baseurl + url
-            if 'http:' not in image:
-                image = baseurl + image
+            if 'http' != image[:4].lower():
+                image = baseurl + image                
             if showRating:
                 stars = len(re.findall('star_on.png', rating, re.S | re.I))
                 title = title + "  [COLOR=blue]"+str(stars)+"/10[/COLOR]"
@@ -74,7 +86,7 @@ def INDEX(caturl):
                 title = title + \
                     "  [COLOR=blue](" + str(votes[0]) + " votes)[/COLOR]"
             if preloadInfo:
-                info = getInfos(getUrl(url))
+                info = getInfos(url)
                 if preRating and info['imdb']:
                     title = title + " [COLOR=red]"+info['imdb'] + "/10[/COLOR]"
                 if preGenres and info['genres']:
@@ -90,7 +102,7 @@ def INDEX(caturl):
         else:
             INDEX(nextPage[0])
     if forceViewMode:
-        xbmc.executebuiltin("Container.SetViewMode("+viewMode+")")
+        xbmc.executebuiltin('Container.SetViewMode({})'.format(viewMode))
 
 def SEARCH(url):
     keyboard = xbmc.Keyboard('', 'Suche')
@@ -108,20 +120,29 @@ def clean(s):
             pass
     return urllib.parse.unquote_plus(s)
 
-def selectVideoDialog(videos, data):
+def selectVideoDialog(videos, url, data=None):
     titles = []
     infostring = ""
     for name, src in videos:
         titles.append(name)
     if showMovieInfo:
-        info = getInfos(data)
+        info = getInfos(url, data)
         infostring = "FP: {0}/10 Imdb: {1}/10 Jahr: {2}\nDauer: {3} Genre: {4}".format(info['fp'], info['imdb'], info['year'], info['runtime'], info['genres'])
     idx = xbmcgui.Dialog().select(infostring, titles)
     if idx > -1:
         return videos[idx][1]
 
-def getInfos(data):
+def getInfos(url, data=None):
     info = {'fp': '0', 'imdb': '0', 'genres': '', 'actors': '', 'year': '', 'runtime': '', 'description': ''}
+    md5file = hashlib.md5(url.encode('utf-8')).hexdigest()
+    md5file = tempDir + md5file   
+    if caching:
+        if os.path.exists(md5file):
+            with open(md5file, "r") as f:
+                info=f.read()
+                return eval(info)      
+    if data is None:
+        data = getUrl(url)
     match = re.search('>&ndash; Imdb: ([0-9,.]{0,3})/10', data, re.S | re.I)
     if match:
         info['imdb'] = match.group(1)
@@ -141,6 +162,9 @@ def getInfos(data):
         info['actors'] = info['actors'] + actor + " / "
     info['actors'] = info['actors'].rstrip(' /')
     info['genres'] = info['genres'].rstrip(' /')
+    if caching:
+        with open(md5file, "w") as f:
+            f.write(str(info))   
     return info
 
 def resolveUrl(mediaUrl, validateOnly=False):
@@ -159,7 +183,7 @@ def resolveUrl(mediaUrl, validateOnly=False):
 
 def PLAYVIDEO(url):
     global filterUnknownHoster
-    print(url)
+    #print(url)
     data = getUrl(url)
     if not data:
         return
@@ -174,7 +198,7 @@ def PLAYVIDEO(url):
         xbmc.executebuiltin(
             "XBMC.Notification(Fehler!, Video nicht gefunden, 4000)")
         return
-    url = selectVideoDialog(videos, data) if lv > 1 else videos[0][1]
+    url = selectVideoDialog(videos, url, data) if lv > 1 else videos[0][1]
     if url:
         stream_url = resolveUrl(url)
         if stream_url:
@@ -183,7 +207,9 @@ def PLAYVIDEO(url):
             return xbmcplugin.setResolvedUrl(pluginhandle, True, listitem)
     raise Exception('Resolve URL aborted')
 
-def getUrl(url):
+def getUrl(url): 
+    if bypassDNSlock:
+        return urllib3p.get_request(url,userAgent=userAgent)
     req = urllib.request.Request(url)
     req.add_header('User-Agent', userAgent)
     req.add_header('Referer', url)
@@ -209,8 +235,20 @@ def get_params():
     return param
 
 def addLink(name, url, mode, image):
-    u = sys.argv[0] + "?url=" + urllib.parse.quote_plus(url) + "&mode=" + str(mode)
-    #liz = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=image)
+ 
+    md5file = hashlib.md5(image.encode('utf-8')).hexdigest()+image[-4:]
+    md5file = tempDir + md5file    
+    try:
+        if os.stat(md5file).st_size <= 0 or caching == False:
+            raise
+    except Exception:
+        if bypassDNSlock:
+            urllib3p.get_request(image, path=md5file, userAgent=userAgent)
+        pass
+  
+    if bypassDNSlock:
+        image = md5file
+    u = sys.argv[0] + "?url=" + urllib.parse.quote_plus(url) + "&mode=" + str(mode) 
     liz = xbmcgui.ListItem(name)
     liz.setArt({'icon': 'DefaultVideo.png', 'thumb': image})
     liz.setInfo(type="Video", infoLabels={"Title": name})
@@ -218,7 +256,7 @@ def addLink(name, url, mode, image):
     return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz)
 
 def addDir(name, url, mode, image, is_folder=False):
-    u = sys.argv[0] + "?url=" + urllib.parse.quote_plus(url) + "&mode=" + str(mode)
+    u = sys.argv[0] + "?url=" + urllib.parse.quote_plus(url) + "&mode=" + str(mode) 
     liz = xbmcgui.ListItem(name)
     liz.setArt({'icon': 'DefaultFolder.png', 'thumb': image})
     # liz.setArtpath()
@@ -226,9 +264,19 @@ def addDir(name, url, mode, image, is_folder=False):
     liz.setInfo(type="Video", infoLabels={"Title": name})
     return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz, isFolder=is_folder)
 
+build_version = xbmc.getInfoLabel('System.BuildVersion')
+major_version = int(build_version.split('.')[0])
+
+
 params = get_params()
 url = None
 mode = None
+if os.path.exists(tempDir) == False:
+    os.mkdir(tempDir)
+else:
+    if caching == False:
+        for f in os.listdir(tempDir):
+            os.remove(tempDir + os.sep + f)
 
 try:
     url = urllib.parse.unquote_plus(params["url"])

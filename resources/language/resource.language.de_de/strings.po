@@ -44,3 +44,11 @@ msgstr ""
 msgctxt "#30110"
 msgid "Genre in Listenansicht"
 msgstr ""
+
+msgctxt "#30111"
+msgid "DNS Netzsperre ignorieren"
+msgstr ""
+
+msgctxt "#30112"
+msgid "Seiten zwischenspeichern"
+msgstr ""
