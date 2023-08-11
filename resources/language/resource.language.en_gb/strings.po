@@ -47,7 +47,7 @@ msgid "Show Genre in list view"
 msgstr ""
 
 msgctxt "#30111"
-msgid "Bybass DNS Lock"
+msgid "Bypass DNS Lock"
 msgstr ""
 
 msgctxt "#30112"
