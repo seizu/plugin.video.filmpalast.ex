@@ -1,12 +1,11 @@
 # plugin.video.filmpalast.ex
 Kodi Video Plugin for Filmpalast.to
 
+**New version with byPass DNS-Lock option**
+
 Installation
 ------------
-1) Open Kodi go to System->Filemanager->Add source-> https://seizu.github.io/seizuRepo/
-2) Go To AddOns -> Install from zip file-> choose source from step 1) -> Install "repository.seizu-1.6.zip"
-3) Go To AddOns -> Install from repository -> choose "seizu Repo" -> Video add-ons -> FilmPalastEx -> Install (choose version 'm' for kodi19+)
-4) Recommended Skin: Confluence	
+Step by step instructions can be found here: https://seizu.github.io/seizuRepo/
 
 List View
 <img src="./screenshot.png"/> 
