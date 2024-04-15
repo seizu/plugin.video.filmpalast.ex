@@ -3,11 +3,14 @@
   <string id="30101">Filter Not Supported Hosts</string>
   <string id="30102">Force View</string>
   <string id="30103">ViewID</string>
-  <string id="30104">Max Items per Page</string>
-  <string id="30105">Show Movie Info in dialog</string>
-  <string id="30106">Show FP Rating in list view</string>
-  <string id="30107">Show FP Votes in list view</string>
-  <string id="30108">Preload Movie Info (slow)</string>
-  <string id="30109">Show IMDB Rating in list view</string>
-  <string id="30110">Show Genre in list view</string>
+  <string id="30104">Show Movie Info in dialog</string>
+  <string id="30105">Show FP Rating in list view</string>
+  <string id="30106">Show FP Votes in list view</string>
+  <string id="30107">Preload Movie Info (slow)</string>
+  <string id="30108">Show IMDB Rating in list view</string>
+  <string id="30109">Show Genre in list view</string>
+  <string id="30110">Show Description</string>
+  <string id="30111">Bypass DNS Lock</string>
+  <string id="30112">Cache pages</string>
+  <string id="30113">Show Year in list view</string>  
 </strings>

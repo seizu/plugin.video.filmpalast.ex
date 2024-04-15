@@ -8,6 +8,8 @@ import re
 import os
 import xlibs.urllib3 as urllib3p
 from kodi_six import xbmc, xbmcaddon, xbmcgui, xbmcplugin, xbmcvfs
+#import web_pdb; web_pdb.set_trace()
+
 
 dbg = True
 pluginhandle = int(sys.argv[1])
@@ -25,10 +27,13 @@ showMovieInfo = settings.getSetting("showMovieInfo") == 'true'
 preloadInfo = settings.getSetting("preloadInfo") == 'true'
 preRating = settings.getSetting("preRating") == 'true'
 preGenres = settings.getSetting("preGenres") == 'true'
-userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0'
+preDescription = settings.getSetting("preDescription") == 'true'
+preYear = settings.getSetting("preYear") == 'true'
+userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:124.0) Gecko/20100101 Firefox/124.0'
 bypassDNSlock = settings.getSetting("bypassDNSlock") == 'true'
 caching = settings.getSetting("caching") == 'true' or bypassDNSlock
 tempDir = xbmcvfs.translatePath("special://temp") + "filmpalast" + os.sep
+
 
 print("Super:" + viewMode)
 
@@ -64,6 +69,7 @@ def INDEX(caturl):
         xbmc.log(caturl)
     global itemcnt
     data = getUrl(caturl)
+    description = ""
     for entry in re.findall('id="content"[^>]*>(.+?)<[^>]*id="paging"', data, re.S | re.I):
         if (dbg):
             print(entry)
@@ -91,7 +97,11 @@ def INDEX(caturl):
                     title = title + " [COLOR=red]"+info['imdb'] + "/10[/COLOR]"
                 if preGenres and info['genres']:
                     title = title + " [COLOR=green]"+info['genres']+"[/COLOR]"
-            addLink(clean(title), url, 10, image)
+                if preYear and info['year']:
+                    title = title + " [COLOR=blue]("+info['year']+")[/COLOR]"              
+                if preDescription and info['description']:
+                    description = info['description']
+            addLink(clean(title), url, 10, image, description)
             itemcnt = itemcnt + 1
     nextPage = re.findall('<a[^>]*class="[^"]*pageing[^"]*"[^>]*href=["\']([^"\']*)["\'][^>]*>[ ]*vorw', data, re.S | re.I)
     if nextPage:
@@ -131,6 +141,7 @@ def selectVideoDialog(videos, url, data=None):
     idx = xbmcgui.Dialog().select(infostring, titles)
     if idx > -1:
         return videos[idx][1]
+    return False
 
 def getInfos(url, data=None):
     info = {'fp': '0', 'imdb': '0', 'genres': '', 'actors': '', 'year': '', 'runtime': '', 'description': ''}
@@ -205,7 +216,7 @@ def PLAYVIDEO(url):
             print(('open stream: ' + stream_url))
             listitem = xbmcgui.ListItem(path=stream_url)
             return xbmcplugin.setResolvedUrl(pluginhandle, True, listitem)
-    raise Exception('Resolve URL aborted')
+    raise
 
 def getUrl(url): 
     if bypassDNSlock:
@@ -234,7 +245,7 @@ def get_params():
                 param[splitparams[0]] = splitparams[1]
     return param
 
-def addLink(name, url, mode, image):
+def addLink(name, url, mode, image, description=""):
  
     md5file = hashlib.md5(image.encode('utf-8')).hexdigest()+image[-4:]
     md5file = tempDir + md5file    
@@ -251,7 +262,7 @@ def addLink(name, url, mode, image):
     u = sys.argv[0] + "?url=" + urllib.parse.quote_plus(url) + "&mode=" + str(mode) 
     liz = xbmcgui.ListItem(name)
     liz.setArt({'icon': 'DefaultVideo.png', 'thumb': image})
-    liz.setInfo(type="Video", infoLabels={"Title": name})
+    liz.setInfo(type="Video", infoLabels={"Title": name, "plot": description})
     liz.setProperty('IsPlayable', 'true')
     return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz)
 

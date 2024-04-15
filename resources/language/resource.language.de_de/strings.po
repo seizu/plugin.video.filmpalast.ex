@@ -18,31 +18,31 @@ msgid "ViewID"
 msgstr ""
 
 msgctxt "#30104"
-msgid "Max Einträge pro Seite"
-msgstr ""
-
-msgctxt "#30105"
 msgid "Filminfo im Dialog anzeigen"
 msgstr ""
 
-msgctxt "#30106"
+msgctxt "#30105"
 msgid "FP Bewertung in Listenansicht"
 msgstr ""
 
-msgctxt "#30107"
+msgctxt "#30106"
 msgid "FP Stimmen in Listenansicht"
 msgstr ""
 
-msgctxt "#30108"
+msgctxt "#30107"
 msgid "Filminfo vorladen (langsam)"
 msgstr ""
 
-msgctxt "#30109"
+msgctxt "#30108"
 msgid "IMDB Bewertung in Listenansicht"
 msgstr ""
 
-msgctxt "#30110"
+msgctxt "#30109"
 msgid "Genre in Listenansicht"
+msgstr ""
+
+msgctxt "#30110"
+msgid "Beschreibung anzeigen"
 msgstr ""
 
 msgctxt "#30111"
@@ -51,4 +51,8 @@ msgstr ""
 
 msgctxt "#30112"
 msgid "Seiten zwischenspeichern"
+msgstr ""
+
+msgctxt "#30113"
+msgid "Jahr in Listenansicht"
 msgstr ""

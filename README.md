@@ -13,5 +13,4 @@ List View
 Settings - View
 <img src="./screenshot_settings.png"/>
 
-
 ToDo: Temp folder issue on iOS when caching or ByPass DNS is enabled

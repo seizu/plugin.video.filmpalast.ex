@@ -19,31 +19,31 @@ msgid "ViewID"
 msgstr ""
 
 msgctxt "#30104"
-msgid "Max Items per Page"
-msgstr ""
-
-msgctxt "#30105"
 msgid "Show Movie Info in dialog"
 msgstr ""
 
-msgctxt "#30106"
+msgctxt "#30105"
 msgid "Show FP Rating in list view"
 msgstr ""
 
-msgctxt "#30107"
+msgctxt "#30106"
 msgid "Show FP Votes in list view"
 msgstr ""
 
-msgctxt "#30108"
+msgctxt "#30107"
 msgid "Preload Movie Info (slow)"
 msgstr ""
 
-msgctxt "#30109"
+msgctxt "#30108"
 msgid "Show IMDB Rating in list view"
 msgstr ""
 
-msgctxt "#30110"
+msgctxt "#30109"
 msgid "Show Genre in list view"
+msgstr ""
+
+msgctxt "#30110"
+msgid "Show Description"
 msgstr ""
 
 msgctxt "#30111"
@@ -52,4 +52,8 @@ msgstr ""
 
 msgctxt "#30112"
 msgid "Cache pages"
+msgstr ""
+
+msgctxt "#30113"
+msgid "Show Year in list view"
 msgstr ""

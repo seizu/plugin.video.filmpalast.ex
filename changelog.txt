@@ -1,3 +1,9 @@
+0.4.0
+  - movie description, year in list view added
+
+0.3.0
+  - bypassDNSlock, page caching
+
 0.3.0
   - bypassDNSlock, page caching
 
