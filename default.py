@@ -149,7 +149,7 @@ def getInfos(url, data=None):
     md5file = tempDir + md5file   
     if caching:
         if os.path.exists(md5file):
-            with open(md5file, "r") as f:
+            with open(md5file, "r", encoding="utf-8") as f:
                 info=f.read()
                 return eval(info)      
     if data is None:
@@ -174,7 +174,7 @@ def getInfos(url, data=None):
     info['actors'] = info['actors'].rstrip(' /')
     info['genres'] = info['genres'].rstrip(' /')
     if caching:
-        with open(md5file, "w") as f:
+        with open(md5file, "w", encoding="utf-8") as f:
             f.write(str(info))   
     return info
 
