@@ -11,7 +11,7 @@
     <extension point="xbmc.addon.metadata">
         <platform>all</platform>
         <summary lang="de">FilmPalast.to FiLME &amp; SERiEN sofort &amp; kostenlos online ansehen!</summary>
-        <summary lang="en">FilmPalast.to MOViS &amp; SERiES, watch online instantly &amp; free!</summary>
+        <summary lang="en">FilmPalast.to MOViS &amp; SERiES, watch online instantly &amp;free!</summary>
         <description lang="en">FilmPalastEx - Based on FilmPalast plugin by Lary_Loose</description>
 		<assets>
 			<icon>icon.png</icon>
