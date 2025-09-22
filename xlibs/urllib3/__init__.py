@@ -79,7 +79,7 @@ def doh(url, doh_server="https://cloudflare-dns.com/dns-query"):
         response = http.request('GET', doh_server, fields=params, headers=headers)
 
         if response.status == 200:
-            data = response.data.decode('utf-8')
+            data = response.data.decode('utf-8', errors='ignore')
             inx = data.find('"data":"')
             data = data[(inx+8):]
             inx = data.find('"}')
@@ -108,7 +108,7 @@ def get_request(url, path=None, userAgent="Kodi-crawler", cert='CERT_NONE'):
                 with open(path, "wb") as f:
                     f.write(response.data)                
             else:
-                data = response.data.decode('utf-8')
+                data = response.data.decode('utf-8',errors='ignore')
             response.release_conn()
             return data
         else: 

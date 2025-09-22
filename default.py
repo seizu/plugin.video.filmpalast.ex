@@ -225,7 +225,7 @@ def getUrl(url):
     req.add_header('User-Agent', userAgent)
     req.add_header('Referer', url)
     response = urllib.request.urlopen(req, timeout=30)
-    data = response.read().decode('utf-8')
+    data = response.read().decode('utf-8', errors='ignore')
     response.close()
     return data  # .decode('utf-8')
 
