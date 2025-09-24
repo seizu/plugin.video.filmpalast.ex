@@ -1,3 +1,6 @@
+0.5.0
+  - code refactoring
+
 0.4.3
   - bug fix invalid utf-8 codes ignored
 
