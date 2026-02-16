@@ -1,3 +1,6 @@
+0.5.1
+  - resolverULR version changed
+
 0.5.0
   - code refactoring
 
